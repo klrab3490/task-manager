@@ -32,6 +32,19 @@ const Dashboard = () => {
     return () => unsubscribe();
   }, []);
 
+  const closeForms = () => {
+    setShowAddTask(false);
+    const q = query(collection(db, `user/${uid}/tasks`));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const tasksArray = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTasks(tasksArray);
+    });
+    unsubscribe();
+  }
+
   return (
     <div className="min-h-screen bg-gray-800 p-8">
       <div className="max-w-4xl mx-auto">
@@ -52,7 +65,7 @@ const Dashboard = () => {
           </button>
         </div>
 
-        {showAddTask && <AddTask closeForm={() => setShowAddTask(false)} />}
+        {showAddTask && <AddTask closeForm={() => closeForms()} />}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {tasks.map((task) => (
